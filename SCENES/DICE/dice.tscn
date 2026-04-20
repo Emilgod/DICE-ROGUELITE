@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dokswydubmdyv"]
+
+[ext_resource type="Script" uid="uid://cjtubyawg5hdn" path="res://SCENES/DICE/dice.gd" id="1_yt7g1"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yt7g1"]
+friction = 0.5
+bounce = 0.3
+
+[sub_resource type="BoxMesh" id="BoxMesh_v78ty"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yt7g1"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="Dice" type="RigidBody3D" unique_id=1915836905]
+physics_material_override = SubResource("PhysicsMaterial_yt7g1")
+gravity_scale = 0.4
+script = ExtResource("1_yt7g1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1131973662]
+mesh = SubResource("BoxMesh_v78ty")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1578142248]
+shape = SubResource("BoxShape3D_yt7g1")

@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://de4cacvtqjql"]
+
+[ext_resource type="Script" uid="uid://et50yu0dmsg1" path="res://SCENES/BOARD/board.gd" id="1_3sgx8"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_3sgx8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3sgx8"]
+albedo_color = Color(0.3656202, 0.12960374, 0.08841372, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3sgx8"]
+material = SubResource("StandardMaterial3D_3sgx8")
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3sgx8"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="Environment" id="Environment_eiqg1"]
+background_mode = 1
+
+[node name="Board" type="Node3D" unique_id=1243573810]
+script = ExtResource("1_3sgx8")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1229470431]
+transform = Transform3D(0.99306846, 0.09940495, -0.06271977, 0, 0.533614, 0.8457282, 0.117537715, -0.8398659, 0.5299152, -0.24870944, 1.5968928, 1.690409)
+
+[node name="board" type="StaticBody3D" parent="." unique_id=1189892994]
+physics_material_override = SubResource("PhysicsMaterial_3sgx8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="board" unique_id=2069646306]
+mesh = SubResource("BoxMesh_3sgx8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="board" unique_id=1426642539]
+shape = SubResource("BoxShape3D_3sgx8")
+
+[node name="dice_container" type="Node3D" parent="." unique_id=1084560394]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4447961, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=769919476]
+environment = SubResource("Environment_eiqg1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=711516711]
+transform = Transform3D(-0.5052291, 0.6296735, 0.5901312, 0.8522444, 0.25649652, 0.45594874, 0.13573214, 0.7332947, -0.6662251, 0, 0, 0)
+shadow_enabled = true

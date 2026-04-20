@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="DICE ROGUELITE"
+run/main_scene="uid://tbc25bry8qrb"
 config/features=PackedStringArray("4.6", "Forward Plus")
-config/icon="res://icon.svg"
 
 [physics]
 

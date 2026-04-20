@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://tbc25bry8qrb"]
+
+[ext_resource type="PackedScene" uid="uid://de4cacvtqjql" path="res://SCENES/BOARD/board.tscn" id="1_n2i1s"]
+
+[node name="Main" type="Node2D" unique_id=904934987]
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1668659547]
+offset_left = 300.0
+offset_top = 126.0
+offset_right = 812.0
+offset_bottom = 638.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=1366642880]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="Board" parent="SubViewportContainer/SubViewport" unique_id=1498668013 instance=ExtResource("1_n2i1s")]
