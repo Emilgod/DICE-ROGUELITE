@@ -3,22 +3,84 @@
 [ext_resource type="Script" uid="uid://cjtubyawg5hdn" path="res://SCENES/DICE/dice.gd" id="1_yt7g1"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_yt7g1"]
-friction = 0.5
-bounce = 0.3
-
-[sub_resource type="BoxMesh" id="BoxMesh_v78ty"]
-size = Vector3(0.1, 0.1, 0.1)
+friction = 0.3
+rough = true
+bounce = 0.5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_yt7g1"]
 size = Vector3(0.1, 0.1, 0.1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_33w77"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_sxaet"]
+material = SubResource("StandardMaterial3D_33w77")
+size = Vector3(0.1, 0.1, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r4mup"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_mi3c1"]
+material = SubResource("StandardMaterial3D_r4mup")
+size = Vector3(0.1, 0.1, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4hdak"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_lofky"]
+material = SubResource("StandardMaterial3D_4hdak")
+size = Vector3(0.1, 0.1, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uwly5"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_fimx4"]
+material = SubResource("StandardMaterial3D_uwly5")
+size = Vector3(0.1, 0.1, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_snxhm"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_fumce"]
+material = SubResource("StandardMaterial3D_snxhm")
+size = Vector3(0.1, 0.1, 0.01)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ckwt3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_rg67e"]
+material = SubResource("StandardMaterial3D_ckwt3")
+size = Vector3(0.1, 0.1, 0.01)
+
 [node name="Dice" type="RigidBody3D" unique_id=1915836905]
+mass = 3.0
 physics_material_override = SubResource("PhysicsMaterial_yt7g1")
-gravity_scale = 0.4
+gravity_scale = 0.9
 script = ExtResource("1_yt7g1")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1131973662]
-mesh = SubResource("BoxMesh_v78ty")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1578142248]
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="." unique_id=1942282815]
 shape = SubResource("BoxShape3D_yt7g1")
+
+[node name="face0" type="MeshInstance3D" parent="." unique_id=704315542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.045023687)
+mesh = SubResource("BoxMesh_sxaet")
+
+[node name="face1" type="MeshInstance3D" parent="." unique_id=345611011]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -0.046969723, 2.4735928e-06)
+mesh = SubResource("BoxMesh_mi3c1")
+
+[node name="face2" type="MeshInstance3D" parent="." unique_id=1854487473]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00045550242, 0.04526548)
+mesh = SubResource("BoxMesh_lofky")
+
+[node name="face3" type="MeshInstance3D" parent="." unique_id=1594473616]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.04513675, 0.00045550615, 0)
+mesh = SubResource("BoxMesh_fimx4")
+
+[node name="face4" type="MeshInstance3D" parent="." unique_id=2080146022]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.04510498, 0, 0)
+mesh = SubResource("BoxMesh_fumce")
+
+[node name="RayCast3D" type="RayCast3D" parent="." unique_id=1886108406]
+target_position = Vector3(0, 0, 0)
+debug_shape_custom_color = Color(0.9254902, 0, 0.9254902, 1)
+
+[node name="settling_time" type="Timer" parent="." unique_id=1574242033]
+
+[node name="face5" type="MeshInstance3D" parent="." unique_id=1658732692]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.046456784, 0)
+mesh = SubResource("BoxMesh_rg67e")

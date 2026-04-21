@@ -14,6 +14,9 @@ size = Vector3(10, 0.1, 10)
 [sub_resource type="BoxShape3D" id="BoxShape3D_3sgx8"]
 size = Vector3(10, 0.1, 10)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_yigss"]
+size = Vector3(8, 5, 0.132)
+
 [sub_resource type="Environment" id="Environment_eiqg1"]
 background_mode = 1
 
@@ -21,16 +24,34 @@ background_mode = 1
 script = ExtResource("1_3sgx8")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1229470431]
-transform = Transform3D(0.99306846, 0.09940495, -0.06271977, 0, 0.533614, 0.8457282, 0.117537715, -0.8398659, 0.5299152, -0.24870944, 1.5968928, 1.690409)
+transform = Transform3D(1, 0, 0, 0, 0.3337081, 0.9426765, 0, -0.9426765, 0.3337081, -0.0697875, 2.0623238, 0.7910595)
+fov = 50.0
 
 [node name="board" type="StaticBody3D" parent="." unique_id=1189892994]
 physics_material_override = SubResource("PhysicsMaterial_3sgx8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="board" unique_id=2069646306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013796687, 0.0058317184, -0.013135552)
 mesh = SubResource("BoxMesh_3sgx8")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="board" unique_id=1426642539]
 shape = SubResource("BoxShape3D_3sgx8")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="board" unique_id=1527946081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.111234665, 0.18135035, -1.0959303)
+shape = SubResource("BoxShape3D_yigss")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="board" unique_id=1734113848]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.90973854, 0.3627007, 0.3803835)
+shape = SubResource("BoxShape3D_yigss")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="board" unique_id=1164000326]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.012392521, 0.18135035, 0.7335925)
+shape = SubResource("BoxShape3D_yigss")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="board" unique_id=1531149648]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.9890945, 0.3627007, 0.3803835)
+shape = SubResource("BoxShape3D_yigss")
 
 [node name="dice_container" type="Node3D" parent="." unique_id=1084560394]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4447961, 0)
@@ -41,3 +62,27 @@ environment = SubResource("Environment_eiqg1")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=711516711]
 transform = Transform3D(-0.5052291, 0.6296735, 0.5901312, 0.8522444, 0.25649652, 0.45594874, 0.13573214, 0.7332947, -0.6662251, 0, 0, 0)
 shadow_enabled = true
+
+[node name="UI" type="Control" parent="." unique_id=489844749]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="UI" unique_id=458204969]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -34.0
+offset_top = -31.0
+offset_right = 34.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "REROLL"
+
+[connection signal="pressed" from="UI/Button" to="." method="_on_button_pressed"]
