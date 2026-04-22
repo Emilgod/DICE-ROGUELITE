@@ -14,6 +14,18 @@ config/name="DICE ROGUELITE"
 run/main_scene="uid://tbc25bry8qrb"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/window_width_override=1152
+window/size/window_height_override=648
+window/stretch/mode="canvas_items"
+
+[global_group]
+
+dice=""
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

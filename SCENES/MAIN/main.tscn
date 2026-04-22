@@ -5,13 +5,20 @@
 [node name="Main" type="Node2D" unique_id=904934987]
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1668659547]
-offset_left = 300.0
-offset_top = 126.0
-offset_right = 812.0
-offset_bottom = 638.0
+offset_left = 711.0
+offset_top = 548.0
+offset_right = 1223.0
+offset_bottom = 1060.0
 
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=1366642880]
 handle_input_locally = false
 render_target_update_mode = 4
 
-[node name="Board" parent="SubViewportContainer/SubViewport" unique_id=1498668013 instance=ExtResource("1_n2i1s")]
+[node name="Board" parent="SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container") instance=ExtResource("1_n2i1s")]
+actions_container = NodePath("../../../actions_container")
+
+[node name="actions_container" type="VBoxContainer" parent="." unique_id=1970969888]
+offset_left = 711.0
+offset_top = 39.0
+offset_right = 1221.0
+offset_bottom = 524.0

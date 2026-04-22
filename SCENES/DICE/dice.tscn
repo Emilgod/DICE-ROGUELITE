@@ -46,7 +46,7 @@ size = Vector3(0.1, 0.1, 0.01)
 material = SubResource("StandardMaterial3D_ckwt3")
 size = Vector3(0.1, 0.1, 0.01)
 
-[node name="Dice" type="RigidBody3D" unique_id=1915836905]
+[node name="Dice" type="RigidBody3D" unique_id=1915836905 groups=["dice"]]
 mass = 3.0
 physics_material_override = SubResource("PhysicsMaterial_yt7g1")
 gravity_scale = 0.9
@@ -84,3 +84,5 @@ debug_shape_custom_color = Color(0.9254902, 0, 0.9254902, 1)
 [node name="face5" type="MeshInstance3D" parent="." unique_id=1658732692]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.046456784, 0)
 mesh = SubResource("BoxMesh_rg67e")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]

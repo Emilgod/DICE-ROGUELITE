@@ -1,4 +1,5 @@
 extends RigidBody3D
+@export var board: Node3D
 
 var sides_data = []
 var is_settled: bool = false
@@ -44,10 +45,20 @@ func get_effect_color(effects: Array) -> Color:
 func update_mesh_colors() -> void:
 	if not is_node_ready():
 		return
+	
 	for i in range(faces.size()):
 		var face_mesh = faces[i]
 		var material = StandardMaterial3D.new()
-		material.albedo_color = get_effect_color(sides_data[i]["effects"])
+		var base_color = get_effect_color(sides_data[i]["effects"])
+		
+		material.albedo_color = base_color
+		
+		# Add glow/emission if locked
+		if is_locked:
+			material.emission_enabled = true
+			material.emission = base_color
+			material.emission_energy_multiplier = 2.0
+		
 		face_mesh.set_surface_override_material(0, material)
 		
 func _physics_process(delta: float) -> void:
@@ -60,6 +71,7 @@ func _physics_process(delta: float) -> void:
 			var top_face = get_top_face()
 			var face_data = sides_data[top_face]
 			print("Top face: ", top_face, " | Value: ", face_data["value"], " | Effects: ", face_data["effects"])
+
 			
 func get_top_face() -> int:
 	
@@ -81,8 +93,10 @@ func get_top_face() -> int:
 
 func toggle_lock() -> void:
 	is_locked = !is_locked
+	update_mesh_colors()
 	print("dice locked: ", is_locked)
 	
+
 
 func reset_and_reroll() -> void:
 	is_settled = false
