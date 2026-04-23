@@ -53,14 +53,14 @@ func update_mesh_colors() -> void:
 		
 		material.albedo_color = base_color
 		
-		# Add glow/emission if locked
+		# Only add emission if locked, don't brighten the base color
 		if is_locked:
 			material.emission_enabled = true
 			material.emission = base_color
-			material.emission_energy_multiplier = 2.0
+			material.emission_energy_multiplier = 1.0
 		
 		face_mesh.set_surface_override_material(0, material)
-		
+
 func _physics_process(delta: float) -> void:
 	if is_locked:
 		return

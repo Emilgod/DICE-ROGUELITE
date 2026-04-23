@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="PlayerData" format=3 uid="uid://gkcts6enac7o"]
+
+[ext_resource type="Script" uid="uid://cfq2p8wjiqumc" path="res://RESOURCES/dice_data.gd" id="1_np0l1"]
+[ext_resource type="Script" uid="uid://i31i540u7wti" path="res://RESOURCES/player_data.gd" id="2_87glr"]
+
+[resource]
+script = ExtResource("2_87glr")
+dice_pool = Array[ExtResource("1_np0l1")]([null, null, null])
+metadata/_custom_type_script = "uid://i31i540u7wti"

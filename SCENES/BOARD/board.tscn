@@ -18,7 +18,8 @@ size = Vector3(10, 0.1, 10)
 size = Vector3(8, 5, 0.132)
 
 [sub_resource type="Environment" id="Environment_eiqg1"]
-background_mode = 1
+background_color = Color(0.74138474, 0.7413847, 0.74138457, 1)
+background_energy_multiplier = 3.0
 
 [node name="Board" type="Node3D" unique_id=1243573810]
 script = ExtResource("1_3sgx8")
@@ -61,7 +62,6 @@ environment = SubResource("Environment_eiqg1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=711516711]
 transform = Transform3D(-0.5052291, 0.6296735, 0.5901312, 0.8522444, 0.25649652, 0.45594874, 0.13573214, 0.7332947, -0.6662251, 0, 0, 0)
-shadow_enabled = true
 
 [node name="UI" type="Control" parent="." unique_id=489844749]
 layout_mode = 3

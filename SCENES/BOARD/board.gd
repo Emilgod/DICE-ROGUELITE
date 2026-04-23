@@ -6,17 +6,18 @@ extends Node3D
 
 @export var actions_container: VBoxContainer
 var rerolls_remaining:int  = 2
-
+var player_data: PlayerData
 var dice_scene = preload("res://SCENES/DICE/dice.tscn")
 var all_dice = []
+var dice_templates = preload("res://DICE_TEMPLATES/dice_templates.gd")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	button.disabled
-	for i in 3:
-		spawn_dice()
+	player_data = dice_templates.get_character_1()
+	spawn_dice()
 	update_button_text()
 	create_placeholder_buttons()
-	pass
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
@@ -44,18 +45,14 @@ func _process(delta: float) -> void:
 		button.modulate = Color.WHITE
 
 func spawn_dice():
+	for dice_template in player_data.dice_pool:
+		spawn_die(dice_template)
+	
+func spawn_die(template: DiceData):
 	var dice = dice_scene.instantiate()
 	dice_container.add_child(dice)
 	
-	var sides = [
-		{"value": 2, "effects": ["attack"]},
-		{"value": 1, "effects": ["shield"]},
-		{"value": 3, "effects": ["poison"]},
-		{"value": 1, "effects": ["attack", "poison"]},
-		{"value": 0, "effects": []},
-		{"value": 4, "effects": ["attack"]}
-	]
-	dice.set_sides(sides)
+	dice.set_sides(template.sides)
 	dice.reset_and_reroll()
 	all_dice.append(dice)
 
