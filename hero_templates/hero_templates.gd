@@ -65,3 +65,11 @@ static func get_archer() -> Character:
 		[get_archer_die()],
 		Color.GREEN
 	)
+	
+	
+	# Party presets
+static func get_classic_party() -> Array[Character]:
+	return[get_warrior(), get_mage(), get_archer()]
+	
+static func get_crazy_party() -> Array[Character]:
+	return[get_warrior(), get_warrior(), get_archer()]

@@ -11,8 +11,12 @@ config_version=5
 [application]
 
 config/name="DICE ROGUELITE"
-run/main_scene="uid://tbc25bry8qrb"
+run/main_scene="uid://4y6xl1unyjxx"
 config/features=PackedStringArray("4.6", "Forward Plus")
+
+[autoload]
+
+GameManager="*uid://c2eirdsutdn1b"
 
 [display]
 
@@ -25,6 +29,10 @@ window/stretch/mode="canvas_items"
 [global_group]
 
 dice=""
+
+[layer_names]
+
+3d_physics/layer_8="walls"
 
 [physics]
 

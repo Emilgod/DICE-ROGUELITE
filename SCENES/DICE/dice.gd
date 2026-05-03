@@ -5,6 +5,9 @@ var sides_data = []
 var is_settled: bool = false
 var settle_threshold: float = 0.1
 var is_locked: bool = false
+var class_tint: Color = Color.WHITE
+@export var outline_mesh: MeshInstance3D
+
 @onready var faces = [
 	$face0,
 	$face1,
@@ -18,6 +21,7 @@ var is_locked: bool = false
 func _ready():
 	await get_tree().process_frame
 	update_mesh_colors()
+	update_outline()
 	
 
 func set_sides(data: Array) -> void:
@@ -26,21 +30,28 @@ func set_sides(data: Array) -> void:
 		update_mesh_colors()
 		
 
+func set_class_tint(tint: Color):
+	class_tint = tint
 
 func get_effect_color(effects: Array) -> Color:
-	# Priority: if multiple effects, pick the first one
-	if effects.is_empty():
-		return Color.GRAY  # Blank side
-	
-	match effects[0]:
+	return Color.WHITE
+
+func get_effect_symbol(effect: String) -> String:
+	match effect:
 		"attack":
-			return Color.RED
+			return "⚔️"
 		"shield":
-			return Color.BLUE
+			return "🛡️"
 		"poison":
-			return Color.GREEN
+			return "☠️"
+		"mana":
+			return "✨"
+		"cleave":
+			return "🌪️"
+		"self_shield":
+			return "🛡️"
 		_:
-			return Color.WHITE
+			return ""
 
 func update_mesh_colors() -> void:
 	if not is_node_ready():
@@ -49,17 +60,17 @@ func update_mesh_colors() -> void:
 	for i in range(faces.size()):
 		var face_mesh = faces[i]
 		var material = StandardMaterial3D.new()
-		var base_color = get_effect_color(sides_data[i]["effects"])
 		
-		material.albedo_color = base_color
-		
-		# Only add emission if locked, don't brighten the base color
-		if is_locked:
-			material.emission_enabled = true
-			material.emission = base_color
-			material.emission_energy_multiplier = 1.0
+		# All sides are white, just multiply by class tint
+		material.albedo_color = Color.WHITE * class_tint
 		
 		face_mesh.set_surface_override_material(0, material)
+		
+		# Update symbol on face
+		var symbol_label = face_mesh.get_child(0)
+		if symbol_label:
+			var effect = sides_data[i]["effects"][0] if not sides_data[i]["effects"].is_empty() else ""
+			symbol_label.text = get_effect_symbol(effect)
 
 func _physics_process(delta: float) -> void:
 	if is_locked:
@@ -93,10 +104,14 @@ func get_top_face() -> int:
 
 func toggle_lock() -> void:
 	is_locked = !is_locked
-	update_mesh_colors()
+	update_outline()
 	print("dice locked: ", is_locked)
-	
 
+func update_outline() -> void:
+	if is_locked:
+		outline_mesh.show()
+	else:
+		outline_mesh.hide()
 
 func reset_and_reroll() -> void:
 	is_settled = false

@@ -46,11 +46,27 @@ size = Vector3(0.1, 0.1, 0.01)
 material = SubResource("StandardMaterial3D_ckwt3")
 size = Vector3(0.1, 0.1, 0.01)
 
-[node name="Dice" type="RigidBody3D" unique_id=1915836905 groups=["dice"]]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yt7g1"]
+transparency = 1
+cull_mode = 1
+albedo_color = Color(0.8901961, 0.8901961, 0, 0.078431375)
+emission_enabled = true
+emission = Color(0.7058824, 0.7764706, 0, 1)
+emission_energy_multiplier = 3.04
+billboard_keep_scale = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_33w77"]
+material = SubResource("StandardMaterial3D_yt7g1")
+flip_faces = true
+size = Vector3(0.12, 0.12, 0.12)
+
+[node name="Dice" type="RigidBody3D" unique_id=1915836905 node_paths=PackedStringArray("outline_mesh") groups=["dice"]]
+collision_mask = 129
 mass = 3.0
 physics_material_override = SubResource("PhysicsMaterial_yt7g1")
 gravity_scale = 0.9
 script = ExtResource("1_yt7g1")
+outline_mesh = NodePath("outline_mesh")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="." unique_id=1942282815]
 shape = SubResource("BoxShape3D_yt7g1")
@@ -59,30 +75,63 @@ shape = SubResource("BoxShape3D_yt7g1")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.045023687)
 mesh = SubResource("BoxMesh_sxaet")
 
+[node name="face0_label" type="Label3D" parent="face0" unique_id=91355512]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, -0.012359619)
+text = "test"
+font_size = 12
+
 [node name="face1" type="MeshInstance3D" parent="." unique_id=345611011]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -0.046969723, 2.4735928e-06)
 mesh = SubResource("BoxMesh_mi3c1")
+
+[node name="face1_label" type="Label3D" parent="face1" unique_id=135655945]
+transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 0, 5.1772986e-10, 0.011843681)
+text = "test"
+font_size = 12
 
 [node name="face2" type="MeshInstance3D" parent="." unique_id=1854487473]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00045550242, 0.04526548)
 mesh = SubResource("BoxMesh_lofky")
 
+[node name="face2_label" type="Label3D" parent="face2" unique_id=146370410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.014251709)
+text = "test"
+font_size = 12
+
 [node name="face3" type="MeshInstance3D" parent="." unique_id=1594473616]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.04513675, 0.00045550615, 0)
 mesh = SubResource("BoxMesh_fimx4")
+
+[node name="face3_label" type="Label3D" parent="face3" unique_id=1694115373]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 6.416374e-10, 0, -0.014678955)
+text = "test"
+font_size = 12
 
 [node name="face4" type="MeshInstance3D" parent="." unique_id=2080146022]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.04510498, 0, 0)
 mesh = SubResource("BoxMesh_fumce")
 
-[node name="RayCast3D" type="RayCast3D" parent="." unique_id=1886108406]
-target_position = Vector3(0, 0, 0)
-debug_shape_custom_color = Color(0.9254902, 0, 0.9254902, 1)
-
-[node name="settling_time" type="Timer" parent="." unique_id=1574242033]
+[node name="face4_label" type="Label3D" parent="face4" unique_id=640467156]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2429595e-10, 0, 0.014282227)
+text = "test"
+font_size = 12
 
 [node name="face5" type="MeshInstance3D" parent="." unique_id=1658732692]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.046456784, 0)
 mesh = SubResource("BoxMesh_rg67e")
+
+[node name="face5_label" type="Label3D" parent="face5" unique_id=1301139683]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -4.682219e-10, -0.01071167)
+text = "test"
+font_size = 12
+
+[node name="settling_time" type="Timer" parent="." unique_id=1574242033]
+
+[node name="RayCast3D" type="RayCast3D" parent="." unique_id=1886108406]
+target_position = Vector3(0, 0, 0)
+debug_shape_custom_color = Color(0.9254902, 0, 0.9254902, 1)
+
+[node name="outline_mesh" type="MeshInstance3D" parent="." unique_id=172255168]
+mesh = SubResource("BoxMesh_33w77")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]

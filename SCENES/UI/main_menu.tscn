@@ -1,41 +1,53 @@
 [gd_scene format=3 uid="uid://4y6xl1unyjxx"]
 
-[node name="main_menu" type="Control" unique_id=1771512513]
+[ext_resource type="Script" uid="uid://bitimrvqjy4ei" path="res://SCENES/UI/main_menu.gd" id="1_iu030"]
+[ext_resource type="PackedScene" uid="uid://d3xqfrsvmb38q" path="res://SCENES/UI/party_selection_ui.tscn" id="2_i0lhj"]
+
+[node name="main_menu" type="Control" unique_id=1771512513 node_paths=PackedStringArray("starting_ui", "party_selection")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_iu030")
+starting_ui = NodePath("starting_ui")
+party_selection = NodePath("party_selection")
 
-[node name="Label" type="Label" parent="." unique_id=1244829881]
+[node name="starting_ui" type="Control" parent="." unique_id=1934234271]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="game_label" type="Label" parent="starting_ui" unique_id=1244829881]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 23.0
+offset_left = 376.5
+offset_top = 40.0
+offset_right = 1503.5
+offset_bottom = 366.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 221
 text = "DICE GUYS"
 
-[node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=755435001]
+[node name="buttons" type="VBoxContainer" parent="starting_ui" unique_id=755435001]
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -371.0
-offset_top = -599.0
-offset_right = 340.0
-offset_bottom = -181.0
+offset_left = 569.0
+offset_top = 441.0
+offset_right = 1280.0
+offset_bottom = 859.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_constants/separation = 75
 
-[node name="play" type="Button" parent="HBoxContainer" unique_id=1197511819]
+[node name="play" type="Button" parent="starting_ui/buttons" unique_id=1197511819]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_horizontal = 6
@@ -44,7 +56,7 @@ theme_override_font_sizes/font_size = 60
 text = "PLAY"
 icon_alignment = 1
 
-[node name="quit" type="Button" parent="HBoxContainer" unique_id=283154818]
+[node name="quit" type="Button" parent="starting_ui/buttons" unique_id=283154818]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_horizontal = 6
@@ -52,3 +64,10 @@ size_flags_vertical = 4
 theme_override_font_sizes/font_size = 60
 text = "QUIT"
 icon_alignment = 1
+
+[node name="party_selection" parent="." unique_id=272497843 node_paths=PackedStringArray("starting_ui") instance=ExtResource("2_i0lhj")]
+layout_mode = 1
+starting_ui = NodePath("../starting_ui")
+
+[connection signal="pressed" from="starting_ui/buttons/play" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="starting_ui/buttons/quit" to="." method="_on_quit_pressed"]

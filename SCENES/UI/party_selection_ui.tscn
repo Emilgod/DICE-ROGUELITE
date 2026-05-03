@@ -1,0 +1,74 @@
+[gd_scene format=3 uid="uid://d3xqfrsvmb38q"]
+
+[ext_resource type="Script" uid="uid://byqdkhwepq7oo" path="res://SCENES/UI/party_selection_ui.gd" id="1_x2ykg"]
+
+[node name="party_selection" type="Control" unique_id=272497843]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_x2ykg")
+
+[node name="BACK" type="Button" parent="." unique_id=552641648]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 0
+offset_left = 935.0
+offset_top = 563.0
+offset_right = 985.0
+offset_bottom = 594.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+text = "BACK"
+
+[node name="Label" type="Label" parent="." unique_id=1310242865]
+layout_mode = 0
+offset_top = 372.0
+offset_right = 1920.0
+offset_bottom = 405.0
+text = "SELECT PARTY"
+horizontal_alignment = 1
+
+[node name="party_container_box" type="HBoxContainer" parent="." unique_id=1916176459]
+layout_mode = 0
+offset_top = 417.0
+offset_right = 1920.0
+offset_bottom = 553.0
+theme_override_constants/separation = 21
+alignment = 1
+
+[node name="classic_party" type="VBoxContainer" parent="party_container_box" unique_id=1033968739]
+custom_minimum_size = Vector2(64, 100)
+layout_mode = 2
+
+[node name="classic_button" type="Button" parent="party_container_box/classic_party" unique_id=1305906901]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "CLASSIC"
+
+[node name="Label" type="Label" parent="party_container_box/classic_party" unique_id=340432497]
+layout_mode = 2
+text = "WAR
+MAGE
+ARCHER"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="crazy_party" type="VBoxContainer" parent="party_container_box" unique_id=2114466495]
+layout_mode = 2
+
+[node name="crazy_button" type="Button" parent="party_container_box/crazy_party" unique_id=880522948]
+layout_mode = 2
+text = "CRAZY"
+
+[node name="Label" type="Label" parent="party_container_box/crazy_party" unique_id=230860677]
+layout_mode = 2
+text = "WAR
+WAR
+ARCHER"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="BACK" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="party_container_box/classic_party/classic_button" to="." method="_on_classic_button_pressed"]
+[connection signal="pressed" from="party_container_box/crazy_party/crazy_button" to="." method="_on_crazy_button_pressed"]

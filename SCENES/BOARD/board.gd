@@ -15,7 +15,7 @@ var all_dice = []
 var dice_to_character = {}
 
 func _ready() -> void:
-	setup_party()
+	setup_with_party(GameManager.selected_party)
 	setup_party_display()
 	spawn_dice()
 	update_button_text()
@@ -31,12 +31,12 @@ func update_party_display():
 	for panel in party_container.get_children():
 		panel.update_hp()
 
-func setup_party():
-	party = [
-		hero_templates.get_warrior(),
-		hero_templates.get_mage(),
-		hero_templates.get_archer()
-	]
+func setup_with_party(party_name: String):
+	match party_name:
+		"classic":
+			party = hero_templates.get_classic_party()
+		"crazy":
+			party = hero_templates.get_crazy_party()
 	for character in party:
 		print("Added: ", character.character_name)
 
@@ -50,6 +50,7 @@ func spawn_single_die(template: DiceData, character: Character):
 	dice_container.add_child(dice)
 	
 	dice.set_sides(template.sides)
+	dice.set_class_tint(character.class_color)
 	dice.position = Vector3(randf_range(0, 0.1), -1, randf_range(0, 0.1))
 	dice.apply_central_impulse(Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
 	dice.apply_torque_impulse(Vector3(randf_range(-0.05, 0.05), randf_range(-0.05, 0.05), randf_range(-0.05, 0.05)))
@@ -64,6 +65,12 @@ func _input(event: InputEvent) -> void:
 		var normal = camera_3d.project_ray_normal(mouse_pos)
 		
 		var query = PhysicsRayQueryParameters3D.create(from, from + normal * 1000)
+		
+		# Only hit dice, ignore everything else
+		query.collide_with_areas = false
+		query.collision_mask = 0
+		query.collision_mask |= 1  # Adjust this to match your dice collision layer
+		
 		var result = get_world_3d().direct_space_state.intersect_ray(query)
 		
 		if result and result.collider.is_in_group("dice"):

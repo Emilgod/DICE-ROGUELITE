@@ -15,7 +15,7 @@ size = Vector3(10, 0.1, 10)
 size = Vector3(10, 0.1, 10)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_yigss"]
-size = Vector3(8, 5, 0.132)
+size = Vector3(8, 3.4141846, 0.132)
 
 [sub_resource type="Environment" id="Environment_eiqg1"]
 background_color = Color(0.74138474, 0.7413847, 0.74138457, 1)
@@ -26,9 +26,12 @@ script = ExtResource("1_3sgx8")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1229470431]
 transform = Transform3D(1, 0, 0, 0, 0.3337081, 0.9426765, 0, -0.9426765, 0.3337081, -0.0697875, 2.0623238, 0.7910595)
-fov = 50.0
+fov = 30.0
 
 [node name="board" type="StaticBody3D" parent="." unique_id=1189892994]
+collision_layer = 128
+collision_mask = 0
+input_ray_pickable = false
 physics_material_override = SubResource("PhysicsMaterial_3sgx8")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="board" unique_id=2069646306]
@@ -39,19 +42,19 @@ mesh = SubResource("BoxMesh_3sgx8")
 shape = SubResource("BoxShape3D_3sgx8")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="board" unique_id=1527946081]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.111234665, 0.18135035, -1.0959303)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.111234665, -0.2277683, -0.5447179)
 shape = SubResource("BoxShape3D_yigss")
 
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="board" unique_id=1734113848]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.90973854, 0.3627007, 0.3803835)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.48554504, 0.3627007, 0.3803835)
 shape = SubResource("BoxShape3D_yigss")
 
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="board" unique_id=1164000326]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.012392521, 0.18135035, 0.7335925)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.012392521, -0.20243871, 0.4588058)
 shape = SubResource("BoxShape3D_yigss")
 
 [node name="CollisionShape3D5" type="CollisionShape3D" parent="board" unique_id=1531149648]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.9890945, 0.3627007, 0.3803835)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.64097613, 0.3627007, 0.3803835)
 shape = SubResource("BoxShape3D_yigss")
 
 [node name="dice_container" type="Node3D" parent="." unique_id=1084560394]
