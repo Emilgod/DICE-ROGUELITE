@@ -1,24 +1,28 @@
 extends Node3D
 
+
 @onready var camera_3d: Camera3D = $Camera3D
 @onready var dice_container: Node3D = $dice_container
 @onready var button: Button = $UI/Button
 @export var actions_container: VBoxContainer
 @export var party_container: HBoxContainer
 @export var mana_label: Label
-
+@export var enemy_container: HBoxContainer
 @export var rerolls_remaining: int = 2
 var dice_scene = preload("res://SCENES/DICE/dice.tscn")
 var hero_templates = preload("res://hero_templates/hero_templates.gd")
+var enemy_templates = preload("res://enemy_templates/enemy_templates.gd")
 var character_panel_scene = preload("res://SCENES/CHARACTER STUFF/character_ui.tscn")
 var party: Array[Character] = []
 var all_dice = []
 var dice_to_character = {}
 var party_mana: int = 0
+var current_enemy: Enemy
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
 	setup_party_display()
 	spawn_dice()
+	setup_encounter()
 	update_button_text()
 	create_placeholder_buttons()
 	button.pressed.connect(_on_button_pressed)
@@ -144,3 +148,10 @@ func reroll_dice():
 
 func _on_button_pressed() -> void:
 	reroll_dice()
+
+func setup_encounter():
+	current_enemy = enemy_templates.get_goblin()
+	
+	var enemy_ui = load("res://enemy_templates/enemy_ui.tscn").instantiate()
+	enemy_container.add_child(enemy_ui)
+	enemy_ui.setup(current_enemy)

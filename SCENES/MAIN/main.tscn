@@ -21,10 +21,11 @@ offset_bottom = 1060.0
 handle_input_locally = false
 render_target_update_mode = 4
 
-[node name="Board" parent="combat_phase_ui/SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container", "party_container", "mana_label") instance=ExtResource("1_n2i1s")]
+[node name="Board" parent="combat_phase_ui/SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container", "party_container", "mana_label", "enemy_container") instance=ExtResource("1_n2i1s")]
 actions_container = NodePath("../../../actions_container")
 party_container = NodePath("../../../party_container")
 mana_label = NodePath("../../../mana_label")
+enemy_container = NodePath("../../../enemy_container")
 
 [node name="actions_container" type="VBoxContainer" parent="combat_phase_ui" unique_id=1970969888]
 layout_mode = 0
@@ -49,3 +50,11 @@ offset_top = 516.0
 offset_right = 796.0
 offset_bottom = 542.0
 text = "0 mana"
+
+[node name="enemy_container" type="HBoxContainer" parent="combat_phase_ui" unique_id=1998688666]
+layout_direction = 2
+layout_mode = 0
+offset_left = 1226.0
+offset_top = 111.0
+offset_right = 1911.0
+offset_bottom = 572.0

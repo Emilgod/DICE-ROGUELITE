@@ -91,7 +91,7 @@ static func get_archer_die() -> DiceData:
 	
 static func get_archer_ability() -> Ability:
 	var ability = Ability.new()
-	ability.name = "Focused Shot"
+	ability.name = "Focused"
 	ability.description = "Passive: Double damage vs furthest enemy"
 	ability.ability_type = "passive"
 	ability.mana_cost = 0

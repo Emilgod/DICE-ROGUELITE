@@ -18,4 +18,4 @@ func setup(char: Character):
 	update_hp()
 
 func update_hp():
-	hp_label.text = "HP: %d/%d" % [character.current_hp, character.max_hp]
+	hp_label.text = "%d/%d" % [character.current_hp, character.max_hp]
