@@ -8,14 +8,17 @@ class_name Character
 @export var dice_pool: Array = []
 
 var current_hp: int
+var is_alive: bool = true
+var ability: Ability
 
-func _init(p_name = "", p_class = "", p_hp = 20, p_dice = [], p_color = Color.WHITE):
+func _init(p_name = "", p_class = "", p_hp = 20, p_dice = [], p_color = Color.WHITE, p_ability = null):
 	character_name = p_name
 	class_type = p_class
 	max_hp = p_hp
 	current_hp = p_hp
 	dice_pool = p_dice
 	class_color = p_color
+	ability = p_ability
 
 func take_damage(amount: int):
 	current_hp -= amount

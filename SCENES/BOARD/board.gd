@@ -5,6 +5,7 @@ extends Node3D
 @onready var button: Button = $UI/Button
 @export var actions_container: VBoxContainer
 @export var party_container: HBoxContainer
+@export var mana_label: Label
 
 @export var rerolls_remaining: int = 2
 var dice_scene = preload("res://SCENES/DICE/dice.tscn")
@@ -13,7 +14,7 @@ var character_panel_scene = preload("res://SCENES/CHARACTER STUFF/character_ui.t
 var party: Array[Character] = []
 var all_dice = []
 var dice_to_character = {}
-
+var party_mana: int = 0
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
 	setup_party_display()
@@ -102,6 +103,7 @@ func create_placeholder_buttons() -> void:
 		placeholder.text = "Die %d" % (i + 1)
 		placeholder.disabled = true
 		placeholder.modulate = Color.GRAY
+		placeholder.toggle_mode = true
 		actions_container.add_child(placeholder)
 
 func update_dice_results():
