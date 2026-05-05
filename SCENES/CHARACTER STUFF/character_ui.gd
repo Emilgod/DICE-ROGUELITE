@@ -19,3 +19,9 @@ func setup(char: Character):
 
 func update_hp():
 	hp_label.text = "%d/%d" % [character.current_hp, character.max_hp]
+
+func highlight_as_target():
+	modulate = Color.RED
+
+func unhighlight():
+	modulate = Color.WHITE
