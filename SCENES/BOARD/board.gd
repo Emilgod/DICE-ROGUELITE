@@ -1,15 +1,11 @@
 extends Node3D
 
-enum GameState { ENEMY_PHASE, PLAYER_ROLLING, PLAYER_ACTIONS, ENEMY_EXECUTE }
-
 @onready var camera_3d: Camera3D = $Camera3D
 @onready var dice_container: Node3D = $dice_container
 @onready var button: Button = $UI/Button
 @export var actions_container: VBoxContainer
 @export var party_container: HBoxContainer
-@export var mana_label: Label
 @export var enemy_container: HBoxContainer
-@export var rerolls_remaining: int = 2
 @export var phase_button: Button
 
 var dice_scene = preload("res://SCENES/DICE/dice.tscn")
@@ -20,10 +16,9 @@ var character_panel_scene = preload("res://SCENES/CHARACTER STUFF/character_ui.t
 var party: Array[Character] = []
 var all_dice = []
 var dice_to_character = {}
-var party_mana: int = 0
 var current_enemies: Array[Enemy] = []
 var current_enemy_attacks: Array[Dictionary] = []
-var current_state: GameState = GameState.ENEMY_PHASE
+var rerolls_remaining: int = 2
 
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
@@ -31,13 +26,15 @@ func _ready() -> void:
 	spawn_dice()
 	setup_encounter()
 	create_placeholder_buttons()
+	phase_button.pressed.connect(_on_phase_button_pressed)
+	button.pressed.connect(_on_button_pressed)
 	start_enemy_phase()
 
 func setup_party_display():
-	for Character in party:
+	for character in party:
 		var panel = character_panel_scene.instantiate()
 		party_container.add_child(panel)
-		panel.setup(Character)
+		panel.setup(character)
 
 func update_party_display():
 	for panel in party_container.get_children():
@@ -49,6 +46,7 @@ func setup_with_party(party_name: String):
 			party = hero_templates.get_classic_party()
 		"crazy":
 			party = hero_templates.get_crazy_party()
+	
 	for character in party:
 		print("Added: ", character.character_name)
 
@@ -72,6 +70,10 @@ func spawn_single_die(template: DiceData, character: Character):
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
+		# Only allow locking during rolling phase
+		if not GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
+			return
+		
 		var mouse_pos = get_viewport().get_mouse_position()
 		var from = camera_3d.project_ray_origin(mouse_pos)
 		var normal = camera_3d.project_ray_normal(mouse_pos)
@@ -91,22 +93,10 @@ func _process(delta: float) -> void:
 	update_dice_results()
 	var all_settled = all_dice.all(func(d): return d.is_settled)
 	
-	if current_state == GameState.PLAYER_ROLLING:
+	if GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		button.disabled = not all_settled
-		if button.disabled:
-			button.modulate = Color.GRAY
-		else:
-			button.modulate = Color.WHITE
+		button.modulate = Color.GRAY if button.disabled else Color.WHITE
 
-func update_button_text():
-	if current_state == GameState.PLAYER_ROLLING:
-		if rerolls_remaining >= 0:
-			button.text = "%s REROLLS" % [rerolls_remaining]
-		phase_button.text = "END ROLLS"
-	else:
-		button.text = "..."
-		phase_button.text = "END TURN"
-	
 func create_placeholder_buttons() -> void:
 	for i in range(all_dice.size()):
 		var placeholder = Button.new()
@@ -114,7 +104,6 @@ func create_placeholder_buttons() -> void:
 		placeholder.text = "Die %d" % (i + 1)
 		placeholder.disabled = true
 		placeholder.modulate = Color.GRAY
-		placeholder.toggle_mode = true
 		actions_container.add_child(placeholder)
 
 func update_dice_results():
@@ -141,115 +130,26 @@ func update_dice_results():
 			button.modulate = Color.GRAY
 
 func on_action_selected(face_data: Dictionary, dice, character: Character) -> void:
-	if current_state != GameState.PLAYER_ACTIONS:
+	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		return
 	
 	print("Selected from %s: " % character.character_name, face_data)
-	
-	var effects = face_data["effects"]
-	var value = face_data["value"]
-	
-	# Process each effect
-	for effect in effects:
-		match effect:
-			"attack":
-				apply_attack(value)
-			"shield":
-				show_ally_targeting("shield", value)
-			"heal":
-				show_ally_targeting("heal", value)
-			"poison":
-				apply_poison(value)
-			"mana":
-				apply_mana(value)
-			"cleave":
-				apply_cleave(value)
-			"self_shield":
-				apply_self_shield(character, value)
-	
-	print("Selected from %s: " % character.character_name, face_data)
-	# TODO: Apply effects
-func apply_attack(damage: int):
-	# Attack random enemy
-	var random_enemy = current_enemies[randi() % current_enemies.size()]
-	random_enemy.take_damage(damage)
-	print("Dealt %d damage to %s" % [damage, random_enemy.name])
-	update_enemy_ui()
-	check_enemy_deaths()
+	# TODO: Combat logic here
 
-func apply_cleave(damage: int):
-	# Attack all enemies
-	for enemy in current_enemies:
-		if enemy.is_alive:
-			enemy.take_damage(damage)
-	print("Cleaved all enemies for %d damage" % [damage])
-	update_enemy_ui()
-	check_enemy_deaths()
-
-func apply_poison(amount: int):
-	# For now, just deal damage (poison mechanic can be expanded later)
-	var random_enemy = current_enemies[randi() % current_enemies.size()]
-	random_enemy.take_damage(amount)
-	print("Poisoned %s for %d damage" % [random_enemy.name, amount])
-	update_enemy_ui()
-	check_enemy_deaths()
-
-func apply_mana(amount: int):
-	party_mana = min(party_mana + amount, 10)  # Max 10 mana
-	print("Gained %d mana. Total: %d" % [amount, party_mana])
-	update_mana_label()
-
-func apply_self_shield(character: Character, shield_value: int):
-	# For now, just add to HP (proper shield mechanic can be added later)
-	character.current_hp = min(character.current_hp + shield_value, character.max_hp)
-	print("%s gained %d shield" % [character.character_name, shield_value])
-	update_party_display()
-
-func show_ally_targeting(effect: String, value: int):
-	# Show buttons to select which ally to target
-	var panels = party_container.get_children()
-	for i in range(panels.size()):
-		var panel = panels[i]
-		var target_button = Button.new()
-		target_button.text = "%s (%s: %d)" % [party[i].character_name, effect.to_upper(), value]
-		target_button.pressed.connect(func(): apply_ally_effect(effect, value, party[i]))
-		actions_container.add_child(target_button)
-
-func apply_ally_effect(effect: String, value: int, target: Character):
-	match effect:
-		"shield":
-			target.current_hp = min(target.current_hp + value, target.max_hp)
-			print("%s gained %d shield" % [target.character_name, value])
-		"heal":
-			target.current_hp = min(target.current_hp + value, target.max_hp)
-			print("%s healed for %d" % [target.character_name, value])
-	update_party_display()
-
-func update_enemy_ui():
-	for enemy_ui in enemy_container.get_children():
-		enemy_ui.update_hp()
-
-func update_mana_label():
-	mana_label.text = "Mana: %d/10" % [party_mana]
-
-func check_enemy_deaths():
-	var all_dead = current_enemies.all(func(e): return not e.is_alive)
-	if all_dead:
-		print("ALL ENEMIES DEFEATED!")
-		# TODO: Victory condition
 func reroll_dice():
-	if current_state != GameState.PLAYER_ROLLING:
+	if not GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		return
 	if rerolls_remaining <= 0:
 		end_rolls()
 		return
 	rerolls_remaining -= 1
+	
 	for dice in all_dice:
 		if not dice.is_locked:
 			dice.reset_and_reroll()
+	if rerolls_remaining == 0:
+		end_rolls()
 	update_button_text()
-
-
 
 func setup_encounter():
 	current_enemies = [
@@ -264,7 +164,7 @@ func setup_encounter():
 		enemy_ui.setup(enemy)
 
 func start_enemy_phase():
-	current_state = GameState.ENEMY_PHASE
+	GameManager.set_state(GameManager.GameState.ENEMY_PHASE)
 	print("=== ENEMY PHASE ===")
 	
 	current_enemy_attacks.clear()
@@ -288,34 +188,34 @@ func start_enemy_phase():
 	start_player_rolling_phase()
 
 func start_player_rolling_phase():
-	current_state = GameState.PLAYER_ROLLING
+	GameManager.set_state(GameManager.GameState.PLAYER_ROLLING)
 	print("=== PLAYER ROLLING PHASE ===")
-	for dice in all_dice:
-		if not dice.is_locked:
-			dice.reset_and_reroll()
 	rerolls_remaining = 2
 	
 	for dice in all_dice:
 		dice.is_settled = false
 		dice.is_locked = false
-	
+		dice.update_outline()
+		dice.reset_and_reroll()
 	update_button_text()
 
 func end_rolls():
-	if current_state != GameState.PLAYER_ROLLING:
+	if not GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		return
+	button.hide()
 	
-	current_state = GameState.PLAYER_ACTIONS
+	GameManager.set_state(GameManager.GameState.PLAYER_ACTIONS)
 	print("=== PLAYER ACTIONS PHASE ===")
 	update_button_text()
 
 func end_turn():
-	current_state = GameState.ENEMY_EXECUTE
+	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
+		return
+	button.show()
+	GameManager.set_state(GameManager.GameState.ENEMY_EXECUTE)
 	print("=== ENEMY EXECUTES ===")
-	for dice in all_dice:
-		dice.is_locked = false
+	
 	execute_enemy_turn()
-	update_button_text()
 
 func execute_enemy_turn():
 	for i in range(current_enemies.size()):
@@ -327,25 +227,22 @@ func execute_enemy_turn():
 		print("Enemy %d dealt %d damage to %s" % [i, damage, target.character_name])
 	
 	update_party_display()
-	
-	var all_dead = party.all(func(c): return c.current_hp <= 0)
-	if all_dead:
-		print("PARTY DEFEATED!")
-		return
-	
-	var all_enemies_dead = current_enemies.all(func(e): return not e.is_alive)
-	if all_enemies_dead:
-		print("ENEMIES DEFEATED!")
-		return
-	
 	start_enemy_phase()
 
+func update_button_text():
+	if GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
+		phase_button.text = "END ROLLS"
+		button.text = "%d REROLLS" % [rerolls_remaining]
+	elif GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
+		phase_button.text = "END TURN"
+	else:
+		phase_button.text = "..."
+
 func _on_phase_button_pressed() -> void:
-	if current_state == GameState.PLAYER_ROLLING:
+	if GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		end_rolls()
-	elif current_state == GameState.PLAYER_ACTIONS:
+	elif GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		end_turn()
-	
 
 
 func _on_button_pressed() -> void:

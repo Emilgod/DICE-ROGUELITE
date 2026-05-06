@@ -1,34 +1,35 @@
 [gd_scene format=3 uid="uid://tbc25bry8qrb"]
 
 [ext_resource type="PackedScene" uid="uid://de4cacvtqjql" path="res://SCENES/BOARD/board.tscn" id="1_n2i1s"]
+[ext_resource type="PackedScene" uid="uid://dvppj0nea1p3i" path="res://MANAGERS/combat_manager.tscn" id="2_1xfn7"]
 
 [node name="Main" type="Node2D" unique_id=904934987]
 
-[node name="combat_phase_ui" type="Control" parent="." unique_id=977447429]
+[node name="combat_phase" type="Control" parent="." unique_id=977447429]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="combat_phase_ui" unique_id=1668659547]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="combat_phase" unique_id=1668659547]
 layout_mode = 0
 offset_left = 711.0
 offset_top = 548.0
 offset_right = 1223.0
 offset_bottom = 1060.0
 
-[node name="SubViewport" type="SubViewport" parent="combat_phase_ui/SubViewportContainer" unique_id=1366642880]
+[node name="SubViewport" type="SubViewport" parent="combat_phase/SubViewportContainer" unique_id=1366642880]
 handle_input_locally = false
 render_target_update_mode = 4
 
-[node name="Board" parent="combat_phase_ui/SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container", "party_container", "mana_label", "enemy_container", "phase_button") instance=ExtResource("1_n2i1s")]
+[node name="Board" parent="combat_phase/SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container", "party_container", "mana_label", "enemy_container", "phase_button") instance=ExtResource("1_n2i1s")]
 actions_container = NodePath("../../../actions_container")
 party_container = NodePath("../../../party_container")
 mana_label = NodePath("../../../mana_label")
 enemy_container = NodePath("../../../enemy_container")
 phase_button = NodePath("../../../phase_button")
 
-[node name="actions_container" type="VBoxContainer" parent="combat_phase_ui" unique_id=1970969888]
+[node name="actions_container" type="VBoxContainer" parent="combat_phase" unique_id=1970969888]
 layout_mode = 0
 offset_left = 711.0
 offset_top = 43.0
@@ -36,7 +37,7 @@ offset_right = 1221.0
 offset_bottom = 511.0
 alignment = 1
 
-[node name="party_container" type="HBoxContainer" parent="combat_phase_ui" unique_id=2053656649]
+[node name="party_container" type="HBoxContainer" parent="combat_phase" unique_id=2053656649]
 layout_direction = 3
 layout_mode = 0
 offset_left = -674.0
@@ -44,7 +45,7 @@ offset_top = 111.0
 offset_right = 37.0
 offset_bottom = 482.0
 
-[node name="mana_label" type="Label" parent="combat_phase_ui" unique_id=578840787]
+[node name="mana_label" type="Label" parent="combat_phase" unique_id=578840787]
 layout_mode = 0
 offset_left = 714.0
 offset_top = 516.0
@@ -52,7 +53,7 @@ offset_right = 796.0
 offset_bottom = 542.0
 text = "0 mana"
 
-[node name="enemy_container" type="HBoxContainer" parent="combat_phase_ui" unique_id=1998688666]
+[node name="enemy_container" type="HBoxContainer" parent="combat_phase" unique_id=1998688666]
 layout_direction = 2
 layout_mode = 0
 offset_left = 1226.0
@@ -60,11 +61,13 @@ offset_top = 111.0
 offset_right = 1911.0
 offset_bottom = 572.0
 
-[node name="phase_button" type="Button" parent="combat_phase_ui" unique_id=27524313]
+[node name="phase_button" type="Button" parent="combat_phase" unique_id=27524313]
 layout_mode = 0
 offset_left = 715.0
 offset_top = 552.0
 offset_right = 805.0
 offset_bottom = 583.0
 
-[connection signal="pressed" from="combat_phase_ui/phase_button" to="combat_phase_ui/SubViewportContainer/SubViewport/Board" method="_on_phase_button_pressed"]
+[node name="combat_manager" parent="combat_phase" unique_id=1713729229 instance=ExtResource("2_1xfn7")]
+
+[connection signal="pressed" from="combat_phase/phase_button" to="combat_phase/SubViewportContainer/SubViewport/Board" method="_on_phase_button_pressed"]
