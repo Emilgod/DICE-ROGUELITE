@@ -104,7 +104,6 @@ func _process(delta: float) -> void:
 	
 	if GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		for dice in all_dice:
-			dice.is_settled = false
 			dice.is_locked = false
 			dice.update_outline()
 		if all_settled and not dice_results_updated:
