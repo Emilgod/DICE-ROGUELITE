@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://2bso5dd6chxq"]
+
+[ext_resource type="Script" uid="uid://8fean4m6u6sc" path="res://SCENES/UI/dice_action_button.gd" id="1_yo15n"]
+
+[node name="dice_action_button" type="Button" unique_id=1256011095]
+offset_right = 8.0
+offset_bottom = 8.0
+toggle_mode = true
+script = ExtResource("1_yo15n")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

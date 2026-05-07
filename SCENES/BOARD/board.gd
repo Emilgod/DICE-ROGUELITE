@@ -12,6 +12,7 @@ var dice_scene = preload("res://SCENES/DICE/dice.tscn")
 var hero_templates = preload("res://hero_templates/hero_templates.gd")
 var enemy_templates = preload("res://enemy_templates/enemy_templates.gd")
 var character_panel_scene = preload("res://SCENES/CHARACTER STUFF/character_ui.tscn")
+var dice_action_button_scene = preload("res://SCENES/UI/dice_action_button.tscn")
 
 var party: Array[Character] = []
 var all_dice = []
@@ -19,13 +20,13 @@ var dice_to_character = {}
 var current_enemies: Array[Enemy] = []
 var current_enemy_attacks: Array[Dictionary] = []
 var rerolls_remaining: int = 2
+var dice_results_updated: bool = false
 
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
 	setup_party_display()
 	spawn_dice()
 	setup_encounter()
-	create_placeholder_buttons()
 	phase_button.pressed.connect(_on_phase_button_pressed)
 	button.pressed.connect(_on_button_pressed)
 	start_enemy_phase()
@@ -87,24 +88,30 @@ func _input(event: InputEvent) -> void:
 		
 		if result and result.collider.is_in_group("dice"):
 			result.collider.toggle_lock()
-			update_dice_results()
 
 func _process(delta: float) -> void:
-	update_dice_results()
 	var all_settled = all_dice.all(func(d): return d.is_settled)
 	
 	if GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		button.disabled = not all_settled
 		button.modulate = Color.GRAY if button.disabled else Color.WHITE
 
-func create_placeholder_buttons() -> void:
-	for i in range(all_dice.size()):
-		var placeholder = Button.new()
-		placeholder.name = "DieButton%d" % i
-		placeholder.text = "Die %d" % (i + 1)
-		placeholder.disabled = true
-		placeholder.modulate = Color.GRAY
-		actions_container.add_child(placeholder)
+		if all_settled and not dice_results_updated:
+			update_dice_results()
+			dice_results_updated = true
+	elif GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
+		dice_results_updated = false  # Reset when leaving rolling phase
+	
+	if GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
+		for dice in all_dice:
+			dice.is_settled = false
+			dice.is_locked = false
+			dice.update_outline()
+		if all_settled and not dice_results_updated:
+			update_dice_results()
+			dice_results_updated = true
+			
+
 
 func update_dice_results():
 	for i in range(all_dice.size()):
@@ -116,18 +123,10 @@ func update_dice_results():
 			var top_face = dice.get_top_face()
 			var face_data = dice.sides_data[top_face]
 			
-			button.text = "%s: %d %s" % [character.character_name, face_data["value"], ", ".join(face_data["effects"])]
-			button.disabled = false
-			button.modulate = Color.WHITE
-			
-			for sig in button.pressed.get_connections():
-				button.pressed.disconnect(sig.callable)
-			
-			button.pressed.connect(func(): on_action_selected(face_data, dice, character))
-		else:
-			button.text = "Die %d" % (i + 1)
-			button.disabled = true
-			button.modulate = Color.GRAY
+			var action_button = dice_action_button_scene.instantiate()
+			actions_container.add_child(action_button)
+			action_button.setup(face_data, dice, character, Callable(self, "on_action_selected"))
+
 
 func on_action_selected(face_data: Dictionary, dice, character: Character) -> void:
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
@@ -143,12 +142,19 @@ func reroll_dice():
 		end_rolls()
 		return
 	rerolls_remaining -= 1
+
+	for child in actions_container.get_children():
+		child.free()
+		
+	dice_results_updated = false
 	
 	for dice in all_dice:
 		if not dice.is_locked:
 			dice.reset_and_reroll()
 	if rerolls_remaining == 0:
+		
 		end_rolls()
+
 	update_button_text()
 
 func setup_encounter():
@@ -191,6 +197,9 @@ func start_player_rolling_phase():
 	GameManager.set_state(GameManager.GameState.PLAYER_ROLLING)
 	print("=== PLAYER ROLLING PHASE ===")
 	rerolls_remaining = 2
+	for child in actions_container.get_children():
+		child.queue_free()
+	dice_results_updated = false
 	
 	for dice in all_dice:
 		dice.is_settled = false
