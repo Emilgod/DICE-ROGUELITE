@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://8fean4m6u6sc" path="res://SCENES/UI/dice_action_button.gd" id="1_yo15n"]
 
-[node name="dice_action_button" type="Button" unique_id=1256011095]
+[node name="dice_action_button" type="Button" unique_id=1256011095 groups=["action button"]]
 offset_right = 8.0
 offset_bottom = 8.0
 toggle_mode = true

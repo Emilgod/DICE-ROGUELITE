@@ -14,6 +14,7 @@ var enemy_templates = preload("res://enemy_templates/enemy_templates.gd")
 var character_panel_scene = preload("res://SCENES/CHARACTER STUFF/character_ui.tscn")
 var dice_action_button_scene = preload("res://SCENES/UI/dice_action_button.tscn")
 
+var active_action_button: Button = null
 var party: Array[Character] = []
 var all_dice = []
 var dice_to_character = {}
@@ -21,19 +22,18 @@ var current_enemies: Array[Enemy] = []
 var current_enemy_attacks: Array[Dictionary] = []
 var rerolls_remaining: int = 2
 var dice_results_updated: bool = false
-
+var selected_action: Dictionary = {}
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
 	setup_party_display()
 	spawn_dice()
 	setup_encounter()
-	phase_button.pressed.connect(_on_phase_button_pressed)
-	button.pressed.connect(_on_button_pressed)
 	start_enemy_phase()
 
 func setup_party_display():
 	for character in party:
 		var panel = character_panel_scene.instantiate()
+		panel.board = self
 		party_container.add_child(panel)
 		panel.setup(character)
 
@@ -123,6 +123,7 @@ func update_dice_results():
 			var face_data = dice.sides_data[top_face]
 			
 			var action_button = dice_action_button_scene.instantiate()
+			action_button.board = self
 			actions_container.add_child(action_button)
 			action_button.setup(face_data, dice, character, Callable(self, "on_action_selected"))
 
@@ -131,8 +132,6 @@ func on_action_selected(face_data: Dictionary, dice, character: Character) -> vo
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		return
 	
-	print("Selected from %s: " % character.character_name, face_data)
-	# TODO: Combat logic here
 
 func reroll_dice():
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
@@ -149,7 +148,8 @@ func reroll_dice():
 	
 	for dice in all_dice:
 		if not dice.is_locked:
-			dice.reset_and_reroll()
+			dice.apply_central_impulse(Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
+			dice.apply_torque_impulse(Vector3(randf_range(-0.05, 0.05), randf_range(-0.05, 0.05), randf_range(-0.05, 0.05)))
 	if rerolls_remaining == 0:
 		
 		end_rolls()
@@ -251,7 +251,5 @@ func _on_phase_button_pressed() -> void:
 		end_rolls()
 	elif GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		end_turn()
-
-
 func _on_button_pressed() -> void:
 	reroll_dice()

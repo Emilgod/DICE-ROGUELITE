@@ -115,6 +115,6 @@ func update_outline() -> void:
 
 func reset_and_reroll() -> void:
 	is_settled = false
-	position = Vector3(randf_range(0, 0.1), -1, randf_range(0, 0.1))
+	position = Vector3(randf_range(0, 0.2), -1, randf_range(0, 0.2))
 	apply_central_impulse(Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
 	apply_torque_impulse(Vector3(randf_range(-0.05, 0.05), randf_range(-0.05, 0.05), randf_range(-0.05, 0.05)))

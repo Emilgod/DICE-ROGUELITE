@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://cubwjcukcp0lq" path="res://SCENES/CHARACTER STUFF/character_ui.gd" id="1_ldxep"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ldxep"]
+bg_color = Color(0.9647059, 0.3529412, 0.5137255, 0.22745098)
+
 [sub_resource type="CanvasTexture" id="CanvasTexture_ldxep"]
 
 [node name="character_ui" type="MarginContainer" unique_id=1172489975 node_paths=PackedStringArray("hp_label", "sprite_rect", "name_label", "ability_button")]
@@ -24,8 +27,9 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="ability_button" type="Button" parent="Vbox" unique_id=271569662]
+[node name="ability_button" type="Button" parent="Vbox" unique_id=271569662 groups=["action button"]]
 layout_mode = 2
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ldxep")
 toggle_mode = true
 text = "special"
 
@@ -50,3 +54,5 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 texture = SubResource("CanvasTexture_ldxep")
 expand_mode = 1
+
+[connection signal="pressed" from="Vbox/ability_button" to="." method="_on_ability_button_pressed"]
