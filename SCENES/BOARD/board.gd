@@ -99,23 +99,25 @@ func _process(delta: float) -> void:
 		if all_settled and not dice_results_updated:
 			update_dice_results()
 			dice_results_updated = true
-	elif GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
-		dice_results_updated = false  # Reset when leaving rolling phase
 	
-	if GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
-		for dice in all_dice:
-			dice.is_locked = false
-			dice.update_outline()
+	elif GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		if all_settled and not dice_results_updated:
 			update_dice_results()
 			dice_results_updated = true
-			
+		
+		for dice in all_dice:
+			dice.is_locked = false
+			dice.update_outline()
 
 
 func update_dice_results():
+	# Clear old buttons
+	for child in actions_container.get_children():
+		child.free()
+	
+	# Create new ones
 	for i in range(all_dice.size()):
 		var dice = all_dice[i]
-		var button = actions_container.get_child(i)
 		var character = dice_to_character[dice]
 		
 		if dice.is_settled:
@@ -124,9 +126,9 @@ func update_dice_results():
 			
 			var action_button = dice_action_button_scene.instantiate()
 			action_button.board = self
+			action_button.add_to_group("action_button")
 			actions_container.add_child(action_button)
 			action_button.setup(face_data, dice, character, Callable(self, "on_action_selected"))
-
 
 func on_action_selected(face_data: Dictionary, dice, character: Character) -> void:
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
@@ -140,20 +142,21 @@ func reroll_dice():
 		end_rolls()
 		return
 	rerolls_remaining -= 1
-
-	for child in actions_container.get_children():
-		child.free()
-		
-	dice_results_updated = false
 	
+	for child in actions_container.get_children():
+		child.queue_free()
+		
 	for dice in all_dice:
 		if not dice.is_locked:
-			dice.apply_central_impulse(Vector3(randf_range(-10, 10), 0, randf_range(-10, 10)))
-			dice.apply_torque_impulse(Vector3(randf_range(-0.05, 0.05), randf_range(-0.05, 0.05), randf_range(-0.05, 0.05)))
-	if rerolls_remaining == 0:
-		
-		end_rolls()
+			dice.is_settled = false
+			dice.apply_central_impulse(Vector3(randf_range(-10, 10), randf_range(7, 10), randf_range(-10, 10)))
+			dice.apply_torque_impulse(Vector3(randf_range(-0.2, 0.2), randf_range(-0.2, 0.2), randf_range(-0.2, 0.2)))
+	# Reset flag so _process() will update buttons when dice settle
+	dice_results_updated = false
+	
 
+	if rerolls_remaining == 0:
+		end_rolls()
 	update_button_text()
 
 func setup_encounter():
@@ -197,7 +200,7 @@ func start_player_rolling_phase():
 	print("=== PLAYER ROLLING PHASE ===")
 	rerolls_remaining = 2
 	for child in actions_container.get_children():
-		child.queue_free()
+		child.free()
 	dice_results_updated = false
 	
 	for dice in all_dice:
@@ -212,6 +215,7 @@ func end_rolls():
 		return
 	button.hide()
 	
+	dice_results_updated = false
 	GameManager.set_state(GameManager.GameState.PLAYER_ACTIONS)
 	print("=== PLAYER ACTIONS PHASE ===")
 	update_button_text()
@@ -251,5 +255,6 @@ func _on_phase_button_pressed() -> void:
 		end_rolls()
 	elif GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		end_turn()
+
 func _on_button_pressed() -> void:
 	reroll_dice()
