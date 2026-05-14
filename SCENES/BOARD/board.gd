@@ -7,6 +7,7 @@ extends Node3D
 @export var party_container: HBoxContainer
 @export var enemy_container: HBoxContainer
 @export var phase_button: Button
+@export var combat_manager: CombatManager
 
 var dice_scene = preload("res://SCENES/DICE/dice.tscn")
 var hero_templates = preload("res://hero_templates/hero_templates.gd")
@@ -22,7 +23,9 @@ var current_enemies: Array[Enemy] = []
 var current_enemy_attacks: Array[Dictionary] = []
 var rerolls_remaining: int = 2
 var dice_results_updated: bool = false
-var selected_action: Dictionary = {}
+var action_targeting
+enum targeting_types { INSTANT, ENEMY_TARGETED, ALLY_TARGETED }
+
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
 	setup_party_display()
@@ -130,11 +133,14 @@ func update_dice_results():
 			actions_container.add_child(action_button)
 			action_button.setup(face_data, dice, character, Callable(self, "on_action_selected"))
 
-func on_action_selected(face_data: Dictionary, dice, character: Character) -> void:
-	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
-		return
-	
 
+func show_enemy_targeting(face_data: Dictionary, character: Character) -> void:
+	print("Select enemy target...")
+	# Show enemy selection UI
+
+func show_ally_targeting(face_data: Dictionary, character: Character) -> void:
+	print("Select ally target...")
+	# Show ally selection UI
 func reroll_dice():
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		return
@@ -169,6 +175,7 @@ func setup_encounter():
 	for enemy in current_enemies:
 		var enemy_ui = load("res://enemy_templates/enemy_ui.tscn").instantiate()
 		enemy_container.add_child(enemy_ui)
+		enemy_ui.board = self
 		enemy_ui.setup(enemy)
 
 func start_enemy_phase():
@@ -258,3 +265,13 @@ func _on_phase_button_pressed() -> void:
 
 func _on_button_pressed() -> void:
 	reroll_dice()
+func find_action_targeting(effects: Array):
+	for effect in effects:
+		if effect in ["attack", "poison"]:
+			action_targeting = "ENEMY_TARGETED"
+			return 
+		if effect in ["shield"]:
+			action_targeting = "ALLY_TARGETED"
+			return 
+	action_targeting = "INSTANT"
+	return

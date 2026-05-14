@@ -4,6 +4,7 @@ extends MarginContainer
 @export var sprite_rect: TextureRect
 @export var name_label: Label
 @export var ability_button: Button
+@export var highlight: ColorRect
 
 var character: Character
 var board:Node3D
@@ -18,6 +19,11 @@ func _process(delta: float) -> void:
 				ability_button.disabled = false
 			else:
 				ability_button.disabled = true
+				
+	if board.action_targeting == "ALLY_TARGETED":
+		highlight.show()
+	else:
+		highlight.hide()
 func setup(char: Character):
 	character = char
 	name_label.text = char.character_name
@@ -46,9 +52,6 @@ func _on_ability_button_pressed() -> void:
 		button.button_pressed = false
 	ability_button.button_pressed = true
 	
-	board.selected_action = {
-		"type": "ability",
-		"ability": character.ability,
-		"character": character
-	}
-	print("Selected dice action: ", board.selected_action)
+	board.find_action_targeting(character.ability.effect["effects"])
+	print("Selected action: ", )
+	print("targeting system :", board.action_targeting)

@@ -6,6 +6,7 @@ class_name Ability
 @export var ability_type: String = ""  # "active" or "passive"
 @export var mana_cost: int = 0
 @export var cooldown: int = 0
+var effect
 
 func execute(source: Character, target) -> void:
 	match ability_type:

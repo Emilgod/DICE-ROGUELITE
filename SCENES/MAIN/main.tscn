@@ -22,11 +22,12 @@ offset_bottom = 1060.0
 handle_input_locally = false
 render_target_update_mode = 4
 
-[node name="Board" parent="combat_phase/SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container", "party_container", "enemy_container", "phase_button") instance=ExtResource("1_n2i1s")]
+[node name="Board" parent="combat_phase/SubViewportContainer/SubViewport" unique_id=1498668013 node_paths=PackedStringArray("actions_container", "party_container", "enemy_container", "phase_button", "combat_manager") instance=ExtResource("1_n2i1s")]
 actions_container = NodePath("../../../actions_container")
 party_container = NodePath("../../../party_container")
 enemy_container = NodePath("../../../enemy_container")
 phase_button = NodePath("../../../phase_button")
+combat_manager = NodePath("../../../combat_manager")
 
 [node name="actions_container" type="VBoxContainer" parent="combat_phase" unique_id=1970969888]
 layout_mode = 0

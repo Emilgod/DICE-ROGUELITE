@@ -28,6 +28,7 @@ static func get_warrior_ability() -> Ability:
 	ability.description = "make an enemy target you"
 	ability.ability_type = "active"
 	ability.mana_cost = 0
+	ability.effect = {"value": 2, "effects": ["shield"]}
 	return ability
 	
 	
@@ -61,6 +62,7 @@ static func get_mage_ability() -> Ability:
 	ability.description = "Deal 2 damage, costs 2 mana"
 	ability.ability_type = "active"
 	ability.mana_cost = 2
+	ability.effect = {"value": 2, "effects": ["attack"]}
 	return ability
 
 

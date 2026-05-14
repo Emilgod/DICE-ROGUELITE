@@ -45,6 +45,7 @@ layout_mode = 2
 texture = SubResource("CanvasTexture_aj76g")
 
 [node name="highlight" type="ColorRect" parent="VBoxContainer/TextureRect" unique_id=2057157011]
+visible = false
 show_behind_parent = true
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 0
@@ -52,7 +53,7 @@ offset_left = -4.0
 offset_top = -4.0
 offset_right = 68.0
 offset_bottom = 104.0
-color = Color(0.99215686, 0.15294118, 0.34901962, 0.8862745)
+color = Color(1, 1, 0.16470589, 0.5411765)
 
 [node name="action_label" type="Label" parent="VBoxContainer" unique_id=1926858858]
 layout_mode = 2
