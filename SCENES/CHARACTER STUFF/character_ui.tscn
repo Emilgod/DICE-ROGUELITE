@@ -67,3 +67,4 @@ offset_bottom = 104.0
 color = Color(0.14509805, 0.9372549, 1, 0.45490196)
 
 [connection signal="pressed" from="Vbox/ability_button" to="." method="_on_ability_button_pressed"]
+[connection signal="gui_input" from="Vbox/sprite_rect/highlight" to="." method="_on_highlight_gui_input"]

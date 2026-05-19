@@ -1,16 +1,17 @@
 extends Resource
 class_name Enemy
 
-@export var name: String = ""
+@export var character_name: String = ""
 @export var max_hp: int = 10
 @export var enemy_type: String = ""  # "goblin", "skeleton", etc.
 @export var dice: DiceData
 
+var target_override: Character = null 
 var current_hp: int
 var is_alive: bool = true
 var target: int
 func _init(p_name = "", p_type = "", p_hp = 10, p_dice = null):
-	name = p_name
+	character_name = p_name
 	enemy_type = p_type
 	max_hp = p_hp
 	current_hp = p_hp
@@ -21,6 +22,7 @@ func roll_dice(party_size: int) -> Dictionary:
 	target = randi() % party_size
 	return{
 		"damage": random_side["value"],
+		"effects": random_side["effects"],
 		"target": target
 	}
 func take_damage(amount: int):

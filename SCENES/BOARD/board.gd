@@ -8,13 +8,13 @@ extends Node3D
 @export var enemy_container: HBoxContainer
 @export var phase_button: Button
 @export var combat_manager: CombatManager
+@export var mana_label: Label
 
 var dice_scene = preload("res://SCENES/DICE/dice.tscn")
 var hero_templates = preload("res://hero_templates/hero_templates.gd")
 var enemy_templates = preload("res://enemy_templates/enemy_templates.gd")
 var character_panel_scene = preload("res://SCENES/CHARACTER STUFF/character_ui.tscn")
 var dice_action_button_scene = preload("res://SCENES/UI/dice_action_button.tscn")
-
 var active_action_button: Button = null
 var party: Array[Character] = []
 var all_dice = []
@@ -25,7 +25,7 @@ var rerolls_remaining: int = 2
 var dice_results_updated: bool = false
 var action_targeting
 enum targeting_types { INSTANT, ENEMY_TARGETED, ALLY_TARGETED }
-
+var pending_action: Dictionary = {}
 func _ready() -> void:
 	setup_with_party(GameManager.selected_party)
 	setup_party_display()
@@ -42,6 +42,11 @@ func setup_party_display():
 
 func update_party_display():
 	for panel in party_container.get_children():
+		panel.update_hp()
+	mana_label.text = "MANA : %s" % GameManager.current_mana
+	
+func update_enemy_display():
+	for panel in enemy_container.get_children():
 		panel.update_hp()
 
 func setup_with_party(party_name: String):
@@ -127,6 +132,9 @@ func update_dice_results():
 			var top_face = dice.get_top_face()
 			var face_data = dice.sides_data[top_face]
 			
+			if face_data["effects"].is_empty():
+				continue
+			
 			var action_button = dice_action_button_scene.instantiate()
 			action_button.board = self
 			action_button.add_to_group("action_button")
@@ -188,10 +196,18 @@ func start_enemy_phase():
 	for i in range(current_enemies.size()):
 		var enemy = current_enemies[i]
 		var attack = enemy.roll_dice(party.size())
+		
+		# If taunted, override the target
+		if enemy.target_override:
+			attack["target"] = party.find(enemy.target_override)
+			enemy.target_override = null  # Clear taunt after using it
+		
 		current_enemy_attacks.append(attack)
 		
 		var enemy_ui = enemy_uis[i]
-		enemy_ui.set_next_action("Attack %s: %d damage" % [party[attack["target"]].character_name, attack["damage"]])
+		var effects = attack.get("effects", ["attack"])
+		var action_name = effects[0].capitalize() if effects.size() > 0 else "Attack"
+		enemy_ui.set_next_action("%s: %d" % [action_name, attack["damage"]])
 	
 	var panels = party_container.get_children()
 	for i in range(panels.size()):
@@ -231,6 +247,8 @@ func end_turn():
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		return
 	button.show()
+	pending_action = {}
+	GameManager.current_mana = 0
 	GameManager.set_state(GameManager.GameState.ENEMY_EXECUTE)
 	print("=== ENEMY EXECUTES ===")
 	
@@ -244,6 +262,9 @@ func execute_enemy_turn():
 		
 		target.take_damage(damage)
 		print("Enemy %d dealt %d damage to %s" % [i, damage, target.character_name])
+	
+	for character in party:
+		character.shield = 0
 	
 	update_party_display()
 	start_enemy_phase()
@@ -265,9 +286,10 @@ func _on_phase_button_pressed() -> void:
 
 func _on_button_pressed() -> void:
 	reroll_dice()
+
 func find_action_targeting(effects: Array):
 	for effect in effects:
-		if effect in ["attack", "poison"]:
+		if effect in ["attack", "poison", "taunt"]:
 			action_targeting = "ENEMY_TARGETED"
 			return 
 		if effect in ["shield"]:

@@ -9,14 +9,14 @@ extends MarginContainer
 var enemy: Enemy
 # Called when the node enters the scene tree for the first time
 func _process(delta: float) -> void:
-	if board.action_targeting == "ENEMY_TARGETED":
+	if board.action_targeting == "ENEMY_TARGETED" and not board.pending_action.is_empty():
 		highlight.show()
 	else:
 		highlight.hide()
 
 func setup(enemy_obj: Enemy):
 	enemy = enemy_obj
-	name_label.text = enemy.name
+	name_label.text = enemy.character_name
 	update_hp()
 	
 func update_hp():
@@ -24,3 +24,13 @@ func update_hp():
 
 func set_next_action(action: String):
 	action_label.text = "" + action
+
+
+
+
+
+
+func _on_highlight_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		board.combat_manager.execute_targeted_action(enemy, true)
+		update_hp()

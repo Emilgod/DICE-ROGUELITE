@@ -13,6 +13,7 @@ func _process(delta: float) -> void:
 		disabled = false
 	else:
 		disabled = true
+
 func setup(p_face_data: Dictionary, p_dice: Node3D, p_character: Character, callback: Callable):
 	face_data = p_face_data
 	dice = p_dice
@@ -26,7 +27,7 @@ func _on_pressed() -> void:
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ACTIONS):
 		button_pressed = false
 		return
-	var buttons = get_tree().get_nodes_in_group("action button")
+	var buttons = get_tree().get_nodes_in_group("action_button")
 	for button in buttons:
 		button.button_pressed = false
 	button_pressed = true
@@ -35,3 +36,12 @@ func _on_pressed() -> void:
 	print("Selected dice action: ", face_data["effects"])
 	print("targeting system :", board.action_targeting)
 	
+	if board.action_targeting == "INSTANT":
+		board.combat_manager.execute_instant_action(face_data, character, self)
+	else:
+		board.pending_action = {
+			"face_data": face_data,
+			"character": character,
+			"button": self
+		}
+		print("pending action: ", board.pending_action)

@@ -1,11 +1,63 @@
 extends Node2D
 class_name CombatManager
 
-enum GameState { ENEMY_PHASE, PLAYER_ROLLING, PLAYER_ACTIONS, ENEMY_EXECUTE }
+@export var board:Node3D
+var pending_action: Dictionary = {}
 
-var current_state: GameState = GameState.ENEMY_PHASE
-var party: Array[Character] = []
-var current_enemies: Array[Enemy] = []
-var current_enemy_attacks: Array[Dictionary] = []
-var party_mana: int = 0
-var rerolls_remaining: int = 2
+
+func execute_instant_action(face_data: Dictionary, character: Character, button) -> void:
+	var effects = face_data["effects"]
+	var value = face_data["value"]
+	
+	for effect in effects:
+		match effect:
+			"mana":
+				GameManager.add_mana(value)
+				print("Gained %d mana (total: %d)" % [value, GameManager.current_mana])
+			
+			"self_shield":
+				character.add_shield(value)
+				print("%s gained %d shield" % [character.character_name, value])
+			
+			"cleave":
+				for enemy in board.current_enemies:
+					enemy.take_damage(value)
+				print("%s cleaved all enemies for %d damage" % [character.character_name, value])
+	
+	button.queue_free()
+	board.update_party_display()
+	board.update_enemy_display()
+
+func execute_targeted_action(target, target_is_enemy: bool) -> void:
+	if board.pending_action.is_empty():
+		return
+	
+	var action = board.pending_action
+	var face_data = action["face_data"]
+	var acting_character = action["character"]
+	var value = face_data["value"]
+	var effects = face_data["effects"]
+	
+	# Spend mana if it's an ability
+	if action.get("is_ability", false):
+		GameManager.current_mana -= action["mana_cost"]
+		print("Spent %d mana" % action["mana_cost"])
+	
+	# Execute effects
+	for effect in effects:
+		match effect:
+			"attack":
+				target.take_damage(value)
+				print("%s attacked %s for %d damage" % [acting_character.character_name, target.character_name, value])
+			
+			"shield":
+				target.add_shield(value)
+				print("%s shielded %s for %d" % [acting_character.character_name, target.character_name, value])
+			
+			"taunt":
+				target.target_override = acting_character
+				print("%s taunted %s to target them" % [acting_character.character_name, target.character_name])
+	# Clean up
+	action["button"].queue_free()
+	board.pending_action = {}
+	board.update_party_display()
