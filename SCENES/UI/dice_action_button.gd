@@ -30,6 +30,12 @@ func _on_pressed() -> void:
 	var buttons = get_tree().get_nodes_in_group("action_button")
 	for button in buttons:
 		button.button_pressed = false
+	
+	# Add this - deselect ability buttons too
+	var ability_buttons = get_tree().get_nodes_in_group("ability_button")
+	for button in ability_buttons:
+		button.button_pressed = false
+	
 	button_pressed = true
 	
 	board.find_action_targeting(face_data["effects"])

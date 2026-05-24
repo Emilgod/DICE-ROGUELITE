@@ -30,6 +30,7 @@ window/stretch/mode="canvas_items"
 
 dice=""
 "action button"=""
+ability_button=""
 
 [layer_names]
 

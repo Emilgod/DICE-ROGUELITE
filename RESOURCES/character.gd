@@ -11,6 +11,7 @@ var current_hp: int
 var is_alive: bool = true
 var ability: Ability
 var shield: int
+var taunt_used_this_phase: bool = false
 
 func _init(p_name = "", p_class = "", p_hp = 20, p_dice = [], p_color = Color.WHITE, p_ability = null):
 	character_name = p_name

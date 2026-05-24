@@ -23,7 +23,7 @@ func execute_instant_action(face_data: Dictionary, character: Character, button)
 				for enemy in board.current_enemies:
 					enemy.take_damage(value)
 				print("%s cleaved all enemies for %d damage" % [character.character_name, value])
-	
+
 	button.queue_free()
 	board.update_party_display()
 	board.update_enemy_display()
@@ -56,8 +56,25 @@ func execute_targeted_action(target, target_is_enemy: bool) -> void:
 			
 			"taunt":
 				target.target_override = acting_character
+				acting_character.taunt_used_this_phase = true
+				
+				# Find and update the current attack for this enemy
+				for attack in board.current_enemy_attacks:
+					if attack.get("enemy_index") == board.current_enemies.find(target):
+						attack["target"] = board.party.find(acting_character)
+						break
+				
 				print("%s taunted %s to target them" % [acting_character.character_name, target.character_name])
-	# Clean up
-	action["button"].queue_free()
+				var panels = board.party_container.get_children()
+				for panel in panels:
+					panel.unhighlight()
+				
+				for attack in board.current_enemy_attacks:
+					if attack["target"] >= 0 and attack["target"] < panels.size():
+						var target_panel = panels[attack["target"]]
+						target_panel.show_incoming_damage(attack["damage"])
+	
+	if not action["button"].is_in_group("ability_button"):
+		action["button"].queue_free()
 	board.pending_action = {}
 	board.update_party_display()

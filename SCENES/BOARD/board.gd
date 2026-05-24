@@ -189,18 +189,23 @@ func setup_encounter():
 func start_enemy_phase():
 	GameManager.set_state(GameManager.GameState.ENEMY_PHASE)
 	print("=== ENEMY PHASE ===")
+	print("Party size: %d" % party.size())
 	
 	current_enemy_attacks.clear()
 	var enemy_uis = enemy_container.get_children()
-	
+
 	for i in range(current_enemies.size()):
 		var enemy = current_enemies[i]
 		var attack = enemy.roll_dice(party.size())
+		attack["enemy_index"] = i  # Add this
+		print("Enemy %d rolled target: %d" % [i, attack["target"]])
 		
 		# If taunted, override the target
 		if enemy.target_override:
-			attack["target"] = party.find(enemy.target_override)
-			enemy.target_override = null  # Clear taunt after using it
+			var target_index = party.find(enemy.target_override)
+			if target_index != -1:
+				attack["target"] = target_index
+			enemy.target_override = null
 		
 		current_enemy_attacks.append(attack)
 		
@@ -209,18 +214,27 @@ func start_enemy_phase():
 		var action_name = effects[0].capitalize() if effects.size() > 0 else "Attack"
 		enemy_ui.set_next_action("%s: %d" % [action_name, attack["damage"]])
 	
+	# Clear old damage displays
 	var panels = party_container.get_children()
-	for i in range(panels.size()):
-		panels[i].unhighlight()
+	print("Panels size: %d" % panels.size())
 	
+	for panel in panels:
+		panel.unhighlight()
+	
+	# Show new damage numbers based on current attacks
 	for attack in current_enemy_attacks:
-		panels[attack["target"]].highlight_as_target()
+		print("Showing damage for target %d" % attack["target"])
+		if attack["target"] >= 0 and attack["target"] < panels.size():
+			var target_panel = panels[attack["target"]]
+			target_panel.show_incoming_damage(attack["damage"])
 	
 	start_player_rolling_phase()
 
 func start_player_rolling_phase():
 	GameManager.set_state(GameManager.GameState.PLAYER_ROLLING)
 	print("=== PLAYER ROLLING PHASE ===")
+	for character in party:
+		character.taunt_used_this_phase = false
 	rerolls_remaining = 2
 	for child in actions_container.get_children():
 		child.free()
@@ -241,6 +255,12 @@ func end_rolls():
 	dice_results_updated = false
 	GameManager.set_state(GameManager.GameState.PLAYER_ACTIONS)
 	print("=== PLAYER ACTIONS PHASE ===")
+	
+	# Reset taunt usage for this action phase
+	for i in range(party.size()):
+		party[i].taunt_used_this_phase = false
+		party_container.get_children()[i].reset_ability_button()
+	
 	update_button_text()
 
 func end_turn():
