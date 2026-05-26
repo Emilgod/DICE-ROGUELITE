@@ -47,9 +47,14 @@ func execute_targeted_action(target, target_is_enemy: bool) -> void:
 	for effect in effects:
 		match effect:
 			"attack":
-				target.take_damage(value)
+				var damage = value
+				if acting_character.ability and acting_character.ability.name == "Focused":
+					if target.position_in_line == 1:  # Backline enemy
+						damage *= 2
+						print("Double damage to backline!")
+				target.take_damage(damage)
 				print("%s attacked %s for %d damage" % [acting_character.character_name, target.character_name, value])
-			
+				
 			"shield":
 				target.add_shield(value)
 				print("%s shielded %s for %d" % [acting_character.character_name, target.character_name, value])
@@ -65,14 +70,14 @@ func execute_targeted_action(target, target_is_enemy: bool) -> void:
 						break
 				
 				print("%s taunted %s to target them" % [acting_character.character_name, target.character_name])
-				var panels = board.party_container.get_children()
-				for panel in panels:
-					panel.unhighlight()
-				
-				for attack in board.current_enemy_attacks:
-					if attack["target"] >= 0 and attack["target"] < panels.size():
-						var target_panel = panels[attack["target"]]
-						target_panel.show_incoming_damage(attack["damage"])
+	var panels = board.party_container.get_children()
+	for panel in panels:	
+		panel.unhighlight()
+	
+	for attack in board.current_enemy_attacks:
+		if attack["target"] >= 0 and attack["target"] < panels.size():
+			var target_panel = panels[attack["target"]]
+			target_panel.show_incoming_damage(attack["damage"])
 	
 	if not action["button"].is_in_group("ability_button"):
 		action["button"].queue_free()

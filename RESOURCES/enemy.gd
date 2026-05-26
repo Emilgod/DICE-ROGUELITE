@@ -6,6 +6,7 @@ class_name Enemy
 @export var enemy_type: String = ""  # "goblin", "skeleton", etc.
 @export var dice: DiceData
 
+var position_in_line: int = 0
 var target_override: Character = null 
 var current_hp: int
 var is_alive: bool = true

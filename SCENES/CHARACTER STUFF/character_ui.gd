@@ -6,6 +6,7 @@ extends MarginContainer
 @export var ability_button: Button
 @export var highlight: ColorRect
 @export var incoming: Label
+@export var name_bg: ColorRect
 
 var character: Character
 var board:Node3D
@@ -14,7 +15,12 @@ var incoming_damage: int = 0
 func _process(delta: float) -> void:
 	if not is_node_valid(ability_button):
 		return
-	
+		
+	if character.current_hp <= 0:
+		ability_button.disabled = true
+		highlight.modulate = Color.GRAY  # Gray out the panel
+		return
+
 	if character.ability:
 		if character.ability.ability_type == "passive":
 			ability_button.disabled = true
@@ -36,6 +42,7 @@ func _process(delta: float) -> void:
 func setup(char: Character):
 	character = char
 	name_label.text = char.character_name
+	name_label.add_theme_color_override("font_color", char.class_color)
 	if char.ability:
 		ability_button.text = char.ability.name
 		ability_button.tooltip_text = char.ability.description
@@ -45,8 +52,10 @@ func setup(char: Character):
 	
 func show_incoming_damage(damage: int) -> void:
 	incoming_damage += damage
-	incoming.text = "-%d" % incoming_damage
-
+	if incoming_damage > 0:
+		incoming.text = "-%d" % incoming_damage
+	else:
+		incoming.text = ""
 func update_hp():
 	var shield_text = ""
 	if character.shield > 0:
@@ -111,6 +120,17 @@ func _on_highlight_gui_input(event: InputEvent) -> void:
 		board.combat_manager.execute_targeted_action(character, false)
 		update_hp()
 		
+
+
+func show_character_info():
+	print("Character: %s" % character.character_name)
+	print("HP: %d/%d" % [character.current_hp, character.max_hp])
+	print("Possible dice rolls:")
+	
+	for dice_data in character.dice_pool:
+		for side in dice_data.sides:
+			if not side["effects"].is_empty():
+				print("  - %s (value: %d)" % [side["effects"], side["value"]])
 func reset_ability_button() -> void:
 	if character.ability and character.ability.ability_type == "active":
 		ability_button.disabled = false
@@ -118,3 +138,9 @@ func reset_ability_button() -> void:
 
 func is_node_valid(node) -> bool:
 	return is_instance_valid(node) and not node.is_queued_for_deletion()
+
+
+func _on_sprite_rect_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		if board.pending_action.is_empty():  # Only show if not selecting an action
+			show_character_info()

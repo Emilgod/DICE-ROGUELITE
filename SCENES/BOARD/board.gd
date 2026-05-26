@@ -128,10 +128,15 @@ func update_dice_results():
 		var dice = all_dice[i]
 		var character = dice_to_character[dice]
 		
+		# Skip if character is dead
+		if character.current_hp <= 0:
+			continue
+		
 		if dice.is_settled:
 			var top_face = dice.get_top_face()
 			var face_data = dice.sides_data[top_face]
 			
+			# Skip blank faces
 			if face_data["effects"].is_empty():
 				continue
 			
@@ -180,31 +185,50 @@ func setup_encounter():
 		enemy_templates.get_skeleton()
 	]
 	
-	for enemy in current_enemies:
+	for i in range(current_enemies.size()):
+		var enemy = current_enemies[i]
+		# Last enemy is backline
+		enemy.position_in_line = 0 if i < current_enemies.size() - 1 else 1
+		
 		var enemy_ui = load("res://enemy_templates/enemy_ui.tscn").instantiate()
 		enemy_container.add_child(enemy_ui)
 		enemy_ui.board = self
 		enemy_ui.setup(enemy)
-
+		
+func update_enemy_positions():
+	for i in range(current_enemies.size()):
+		var enemy = current_enemies[i]
+		enemy.position_in_line = 0 if i < current_enemies.size() - 1 else 1
+		
 func start_enemy_phase():
 	GameManager.set_state(GameManager.GameState.ENEMY_PHASE)
 	print("=== ENEMY PHASE ===")
-	print("Party size: %d" % party.size())
+	
+	# Get list of alive party members
+	var alive_party = []
+	for character in party:
+		if character.current_hp > 0:
+			alive_party.append(character)
+	
+	# If no one is alive, game over
+	if alive_party.is_empty():
+		print("=== GAME OVER ===")
+		return
 	
 	current_enemy_attacks.clear()
 	var enemy_uis = enemy_container.get_children()
-
+	
 	for i in range(current_enemies.size()):
 		var enemy = current_enemies[i]
-		var attack = enemy.roll_dice(party.size())
-		attack["enemy_index"] = i  # Add this
-		print("Enemy %d rolled target: %d" % [i, attack["target"]])
+		var attack = enemy.roll_dice(alive_party.size())  # Only target alive members
+		attack["enemy_index"] = i  # Add this back
+		# Convert alive_party index to actual party index
+		var actual_target = party.find(alive_party[attack["target"]])
+		attack["target"] = actual_target
 		
 		# If taunted, override the target
-		if enemy.target_override:
-			var target_index = party.find(enemy.target_override)
-			if target_index != -1:
-				attack["target"] = target_index
+		if enemy.target_override and enemy.target_override.current_hp > 0:
+			attack["target"] = party.find(enemy.target_override)
 			enemy.target_override = null
 		
 		current_enemy_attacks.append(attack)
@@ -213,17 +237,15 @@ func start_enemy_phase():
 		var effects = attack.get("effects", ["attack"])
 		var action_name = effects[0].capitalize() if effects.size() > 0 else "Attack"
 		enemy_ui.set_next_action("%s: %d" % [action_name, attack["damage"]])
-	
-	# Clear old damage displays
+		#color
+		var target_character = party[attack["target"]]
+		enemy_ui.color_action_label(target_character)
+	# Clear old damage displays and show new ones
 	var panels = party_container.get_children()
-	print("Panels size: %d" % panels.size())
-	
 	for panel in panels:
 		panel.unhighlight()
 	
-	# Show new damage numbers based on current attacks
 	for attack in current_enemy_attacks:
-		print("Showing damage for target %d" % attack["target"])
 		if attack["target"] >= 0 and attack["target"] < panels.size():
 			var target_panel = panels[attack["target"]]
 			target_panel.show_incoming_damage(attack["damage"])
@@ -241,25 +263,43 @@ func start_player_rolling_phase():
 	dice_results_updated = false
 	
 	for dice in all_dice:
-		dice.is_settled = false
-		dice.is_locked = false
-		dice.update_outline()
-		dice.reset_and_reroll()
+		var character = dice_to_character[dice]
+		
+		# Only roll if character is alive
+		if character.current_hp > 0:
+			dice.is_settled = false
+			dice.is_locked = false
+			dice.update_outline()
+			dice.reset_and_reroll()
+		else:
+			# Dead character's dice stays still
+			dice.is_settled = true
+			dice.visible = false 
 	update_button_text()
 
 func end_rolls():
 	if not GameManager.is_state(GameManager.GameState.PLAYER_ROLLING):
 		return
-	button.hide()
 	
+	# Check if all dice are settled
+	var all_settled = all_dice.all(func(d): return d.is_settled)
+	if not all_settled:
+		print("Wait for all dice to settle first")
+		return
+	
+	# Check if action buttons have been created
+	if not dice_results_updated:
+		print("Wait for action buttons to appear")
+		return
+	
+	button.hide()
 	dice_results_updated = false
 	GameManager.set_state(GameManager.GameState.PLAYER_ACTIONS)
 	print("=== PLAYER ACTIONS PHASE ===")
 	
 	# Reset taunt usage for this action phase
-	for i in range(party.size()):
-		party[i].taunt_used_this_phase = false
-		party_container.get_children()[i].reset_ability_button()
+	for character in party:
+		character.taunt_used_this_phase = false
 	
 	update_button_text()
 
@@ -317,3 +357,6 @@ func find_action_targeting(effects: Array):
 			return 
 	action_targeting = "INSTANT"
 	return
+	
+func victory(): 
+	print("=== YOU WIN ===")
